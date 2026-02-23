@@ -1,0 +1,7 @@
+# Gaussian blur anonymizer
+name: blur
+type: classical
+method: gaussian_blur
+params:
+  kernel_sizes: [11, 21, 31, 51, 71, 101]   # sweep values
+  default_kernel: 31

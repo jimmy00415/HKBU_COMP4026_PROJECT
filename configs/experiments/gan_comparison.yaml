@@ -1,0 +1,16 @@
+# GAN anonymizer comparison experiment — Tier C
+name: gan_comparison
+description: "Compare pretrained GAN anonymizers on privacy-utility frontier"
+anonymizers:
+  - ganonymization
+  - deep_privacy2
+  - ciagan
+datasets:
+  identity: pins
+  expression: fer2013
+metrics:
+  - identity_leakage
+  - expression_retention
+  - realism_fid
+  - realism_lpips
+  - adaptive_attacker

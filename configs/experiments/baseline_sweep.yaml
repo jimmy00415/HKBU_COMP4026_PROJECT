@@ -1,0 +1,15 @@
+# Baseline sweep experiment — Tier A
+name: baseline_sweep
+description: "Classical baseline anonymizers (blur, pixelate, blackout) across strength range"
+anonymizers:
+  - blur
+  - pixelate
+  - blackout
+datasets:
+  identity: pins
+  expression: fer2013
+metrics:
+  - identity_leakage
+  - expression_retention
+  - realism_fid
+  - realism_lpips

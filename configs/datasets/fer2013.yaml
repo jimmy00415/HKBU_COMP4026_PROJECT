@@ -1,0 +1,18 @@
+# FER-2013 dataset config
+name: fer2013
+root: "data/fer2013"
+csv_file: "fer2013.csv"
+resolution_original: 48          # native resolution (grayscale)
+num_classes: 7
+classes:
+  - Angry
+  - Disgust
+  - Fear
+  - Happy
+  - Sad
+  - Surprise
+  - Neutral
+splits:
+  train: "Training"
+  val: "PublicTest"
+  test: "PrivateTest"

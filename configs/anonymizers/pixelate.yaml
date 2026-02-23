@@ -1,0 +1,7 @@
+# Pixelation anonymizer
+name: pixelate
+type: classical
+method: pixelate
+params:
+  block_sizes: [4, 8, 12, 16, 24, 32]       # sweep values
+  default_block: 12

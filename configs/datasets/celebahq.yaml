@@ -1,0 +1,7 @@
+# CelebA-HQ dataset config
+name: celebahq
+root: "data/CelebAMask-HQ"
+image_dir: "CelebA-HQ-img"
+mask_dir: "CelebAMask-HQ-mask-anno"
+num_classes_parsing: 19         # 19 semantic face parts
+resolution: 1024                # native resolution

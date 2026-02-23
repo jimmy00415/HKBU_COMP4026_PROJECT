@@ -1,0 +1,6 @@
+# Blackout anonymizer
+name: blackout
+type: classical
+method: blackout
+params:
+  color: [0, 0, 0]              # RGB fill color

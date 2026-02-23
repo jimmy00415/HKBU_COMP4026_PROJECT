@@ -1,0 +1,7 @@
+# DeepPrivacy2 anonymizer backend
+name: deep_privacy2
+type: gan
+repo_url: "https://github.com/hukkelas/deep_privacy2"
+repo_dir: "third_party/deep_privacy2"
+params:
+  model: "face"                  # face-only anonymization

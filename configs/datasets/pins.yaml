@@ -1,0 +1,6 @@
+# Pins Face Recognition dataset config
+name: pins
+root: "data/pins_face_recognition"
+num_identities: 105
+num_images: 17534
+# Directory structure: root/<identity_folder>/<image>.jpg

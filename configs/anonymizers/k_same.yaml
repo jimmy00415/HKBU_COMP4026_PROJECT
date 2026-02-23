@@ -1,0 +1,7 @@
+# k-Same averaging anonymizer
+name: k_same
+type: k_same
+params:
+  k_values: [2, 5, 10, 20, 50]
+  default_k: 5
+  embedding_model: "arcface"     # used for nearest-neighbor lookup

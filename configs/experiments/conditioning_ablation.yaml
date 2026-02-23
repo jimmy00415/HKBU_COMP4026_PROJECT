@@ -1,0 +1,16 @@
+# Conditioning ablation experiment
+name: conditioning_ablation
+description: "Ablation on conditioning signals for GANonymization"
+anonymizer: ganonymization
+conditioning_variants:
+  - landmarks_only
+  - parsing_only
+  - landmarks_and_parsing
+  - deca_geometry          # optional
+datasets:
+  identity: pins
+  expression: fer2013
+metrics:
+  - identity_leakage
+  - expression_retention
+  - realism_fid

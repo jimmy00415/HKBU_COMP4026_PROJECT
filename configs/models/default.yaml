@@ -1,0 +1,33 @@
+# Default model configuration
+identity:
+  name: "arcface"
+  backbone: "buffalo_l"          # InsightFace model pack
+  embedding_dim: 512
+  threshold: 0.3                 # verification threshold (cosine similarity)
+
+expression:
+  name: "resnet18"
+  backbone: "resnet18"           # timm backbone
+  num_classes: 7
+  pretrained: true
+  checkpoint: null               # path to fine-tuned checkpoint
+
+expression_teacher:
+  name: "emonet"
+  checkpoint: null               # path to pre-trained teacher weights
+  num_classes: 7
+
+face_detector:
+  name: "retinaface"             # "retinaface" | "mtcnn"
+  confidence_threshold: 0.9
+
+face_parser:
+  name: "bisenet"
+  num_classes: 19
+  checkpoint: null               # path to pre-trained BiSeNet weights
+
+adaptive_attacker:
+  hidden_dims: [256, 128]
+  dropout: 0.3
+  epochs: 20
+  lr: 0.001

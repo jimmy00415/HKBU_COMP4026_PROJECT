@@ -1,0 +1,7 @@
+# CIAGAN anonymizer backend
+name: ciagan
+type: gan
+repo_url: "https://github.com/dvl-tum/ciagan"
+repo_dir: "third_party/ciagan"
+params:
+  pretrained: true

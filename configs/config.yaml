@@ -1,0 +1,22 @@
+# ── Main Hydra config ───────────────────────────────────
+# Compose with:  python scripts/run.py dataset=fer2013 anonymizer=ganonymization ...
+
+defaults:
+  - dataset: fer2013
+  - model: default
+  - anonymizer: blur
+  - experiment: baseline_sweep
+  - _self_
+
+# ── Global settings ────────────────────────────────────
+seed: 42
+device: "cuda"          # "cuda" | "cpu"
+num_workers: 4
+output_dir: "results"
+cache_dir: "cache"
+
+# ── Face-crop contract ─────────────────────────────────
+crop:
+  resolution: 256       # canonical anonymizer resolution
+  color_space: "RGB"    # always RGB float32
+  alignment: "arcface_5pt"   # 5-point landmark-based alignment

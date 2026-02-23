@@ -1,0 +1,8 @@
+# GANonymization anonymizer backend
+name: ganonymization
+type: gan
+repo_url: "https://github.com/hcmlab/GANonymization"
+repo_dir: "third_party/GANonymization"
+params:
+  weights: "publication"         # "publication" (25-epoch) | "demo" (50-epoch)
+  mode: "pix2pix"
