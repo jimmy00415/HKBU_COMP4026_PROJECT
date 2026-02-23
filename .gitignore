@@ -1,0 +1,66 @@
+# ── Python ──────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ── Virtual environments ───────────────────────────────
+venv/
+.venv/
+env/
+.env/
+
+# ── IDE / editor ───────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# ── Data (large files — download separately) ───────────
+data/fer2013/
+data/pins_face_recognition/
+data/CelebAMask-HQ/
+data/CelebA-HQ-img/
+data/*.csv
+data/*.zip
+data/*.tar.gz
+
+# ── Pretrained weights ─────────────────────────────────
+pretrained/*.pth
+pretrained/*.onnx
+pretrained/*.pt
+pretrained/*.pkl
+
+# ── Third-party repos (cloned at runtime) ──────────────
+third_party/
+
+# ── Cache / intermediate outputs ───────────────────────
+cache/
+*.npy
+*.npz
+
+# ── Results (keep structure, ignore large outputs) ─────
+results/run_*/
+!results/.gitkeep
+
+# ── Reports (generated) ───────────────────────────────
+reports/*.png
+reports/*.pdf
+reports/*.json
+
+# ── Jupyter ────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── OS ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Logs ───────────────────────────────────────────────
+*.log
+outputs/         # Hydra default output dir
+multirun/        # Hydra multirun dir
