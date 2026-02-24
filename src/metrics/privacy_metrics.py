@@ -59,6 +59,7 @@ class PrivacyReport:
     num_samples: int = 0
 
     def to_dict(self) -> dict[str, Any]:
+        """Serialize privacy metrics to a flat dictionary."""
         return {
             "closed_set_top1": self.closed_set_top1,
             "closed_set_top5": self.closed_set_top5,

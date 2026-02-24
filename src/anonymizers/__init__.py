@@ -53,7 +53,7 @@ _CLASS_MAP: dict[str, str] = {
 }
 
 
-def get_anonymizer(name: str, **kwargs: Any):
+def get_anonymizer(name: str, **kwargs: Any) -> "AnonymizerBase":
     """
     Factory function — create an anonymizer by name.
 

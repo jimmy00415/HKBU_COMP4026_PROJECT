@@ -181,7 +181,7 @@ def compute_summary(rows: list[dict]) -> dict[str, dict[str, float]]:
         anon = r.get("anonymizer", "unknown")
         groups.setdefault(anon, {})
         for k, v in r.items():
-            if k.startswith("_") or k in ("anonymizer", "params"):
+            if k is None or k.startswith("_") or k in ("anonymizer", "params"):
                 continue
             fv = _safe_float(v)
             if not math.isnan(fv):

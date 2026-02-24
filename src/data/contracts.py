@@ -123,10 +123,12 @@ class FaceCropBatch:
 
     @property
     def expression_labels(self) -> list[Optional[int]]:
+        """List of expression labels, one per crop (may be ``None``)."""
         return [c.meta.expression_label for c in self.crops]
 
     @property
     def identity_labels(self) -> list[Optional[int]]:
+        """List of identity labels, one per crop (may be ``None``)."""
         return [c.meta.identity_label for c in self.crops]
 
 
@@ -158,10 +160,12 @@ class AnonymizedBatch:
 
     @property
     def images(self) -> np.ndarray:
+        """Stacked anonymized images ``(N, H, W, 3)``."""
         return np.stack([f.image for f in self.faces], axis=0)
 
     @property
     def original_images(self) -> np.ndarray:
+        """Stacked original images ``(N, H, W, 3)``."""
         return np.stack([f.original.image for f in self.faces], axis=0)
 
 

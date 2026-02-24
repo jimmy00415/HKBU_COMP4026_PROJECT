@@ -228,7 +228,18 @@ class ExpressionClassifier:
         return logits.cpu().numpy()
 
     def predict_proba(self, images: np.ndarray) -> np.ndarray:
-        """Return softmax probabilities — shape (N, num_classes)."""
+        """Return softmax probabilities.
+
+        Parameters
+        ----------
+        images : np.ndarray
+            (N, H, W, 3) float32 [0, 1] face crops.
+
+        Returns
+        -------
+        np.ndarray
+            (N, num_classes) float32 probability distribution per sample.
+        """
         import torch
 
         logits_np = self.predict_logits(images)
@@ -236,7 +247,18 @@ class ExpressionClassifier:
         return torch.softmax(logits_t, dim=1).numpy()
 
     def predict(self, images: np.ndarray) -> np.ndarray:
-        """Return predicted label indices — shape (N,)."""
+        """Return predicted label indices.
+
+        Parameters
+        ----------
+        images : np.ndarray
+            (N, H, W, 3) float32 [0, 1] face crops.
+
+        Returns
+        -------
+        np.ndarray
+            (N,) int64 predicted expression label indices.
+        """
         logits = self.predict_logits(images)
         return logits.argmax(axis=1)
 
@@ -250,6 +272,20 @@ class ExpressionClassifier:
         Compute top-1 accuracy over (potentially large) arrays.
 
         Processes in mini-batches to avoid OOM.
+
+        Parameters
+        ----------
+        images : np.ndarray
+            (N, H, W, 3) float32 [0, 1] face crops.
+        labels : np.ndarray
+            (N,) int ground-truth expression label indices.
+        batch_size : int
+            Mini-batch size for inference (default 256).
+
+        Returns
+        -------
+        float
+            Top-1 accuracy in [0, 1].
         """
         N = images.shape[0]
         correct = 0
@@ -290,14 +326,26 @@ class ExpressionClassifier:
     # ── Persistence ────────────────────────────────────────────────────
 
     def save(self, path: str) -> None:
-        """Save model weights."""
+        """Save model weights.
+
+        Parameters
+        ----------
+        path : str
+            Destination file path for the state dict.
+        """
         import torch
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         torch.save(self._model.state_dict(), path)
         logger.info("ExpressionClassifier saved to %s", path)
 
     def load(self, path: str) -> None:
-        """Load model weights."""
+        """Load model weights and mark the classifier as fitted.
+
+        Parameters
+        ----------
+        path : str
+            Path to a previously saved state dict.
+        """
         import torch
         state_dict = torch.load(path, map_location=self.device, weights_only=True)
         self._model.load_state_dict(state_dict)
@@ -307,4 +355,5 @@ class ExpressionClassifier:
 
     @property
     def fitted(self) -> bool:
+        """Whether the model has been trained or loaded from a checkpoint."""
         return self._fitted

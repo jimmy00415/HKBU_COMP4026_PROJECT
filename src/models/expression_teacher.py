@@ -146,12 +146,27 @@ class ExpressionTeacher:
         return x.to(self.device)
 
     def _prepare_onnx(self, images: np.ndarray) -> np.ndarray:
-        """(N, H, W, 3) float32 [0,1] → (N, 3, H, W) float32 with ImageNet norm."""
+        """(N, H, W, 3) float32 [0,1] → (N, 3, H, W) float32 with ImageNet norm.
+
+        Resizes to (224, 224) by default — the expected input size for most
+        ViT / ResNet ONNX exports (e.g. trpakov/vit-face-expression).
+        """
+        import cv2
+
         if images.ndim == 3:
             images = images[np.newaxis]
 
+        # Resize each image to 224×224 (standard for ONNX vision models)
+        target_h, target_w = 224, 224
+        if images.shape[1] != target_h or images.shape[2] != target_w:
+            resized = np.stack([
+                cv2.resize(img, (target_w, target_h)) for img in images
+            ])
+        else:
+            resized = images
+
         # (N, H, W, 3) → (N, 3, H, W)
-        x = images.astype(np.float32).transpose(0, 3, 1, 2)
+        x = resized.astype(np.float32).transpose(0, 3, 1, 2)
 
         # Standard ImageNet normalisation
         mean = np.array([0.485, 0.456, 0.406], dtype=np.float32).reshape(1, 3, 1, 1)

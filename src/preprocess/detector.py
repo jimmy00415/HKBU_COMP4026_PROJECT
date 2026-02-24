@@ -122,6 +122,7 @@ class RetinaFaceDetector:
 
     @property
     def available(self) -> bool:
+        """Whether the RetinaFace backend loaded successfully."""
         return self._available
 
     def detect(self, image_rgb: np.ndarray) -> list[FaceBox]:
@@ -182,9 +183,22 @@ class MTCNNDetector:
 
     @property
     def available(self) -> bool:
+        """Whether the MTCNN backend loaded successfully."""
         return self._available
 
     def detect(self, image_rgb: np.ndarray) -> list[FaceBox]:
+        """Detect faces using MTCNN.
+
+        Parameters
+        ----------
+        image_rgb : np.ndarray
+            (H, W, 3) uint8 RGB image.
+
+        Returns
+        -------
+        list[FaceBox]
+            Detected faces sorted by confidence descending.
+        """
         if not self._available:
             return []
 

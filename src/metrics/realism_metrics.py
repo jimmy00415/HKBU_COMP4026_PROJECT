@@ -50,6 +50,7 @@ class RealismReport:
     num_samples: int = 0
 
     def to_dict(self) -> dict[str, Any]:
+        """Serialize realism metrics to a flat dictionary."""
         return {
             "fid": self.fid,
             "lpips_mean": self.lpips_mean,

@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Callable, Literal, Optional
 
 import cv2
 import numpy as np
@@ -93,7 +93,7 @@ class CelebAHQDataset(Dataset):
         split: Literal["train", "val", "test", "all"] = "all",
         resolution: int = CANONICAL_RESOLUTION,
         load_masks: bool = True,
-        transform=None,
+        transform: Optional[Callable] = None,
     ) -> None:
         super().__init__()
         self.root = Path(root)
@@ -202,6 +202,7 @@ class CelebAHQDataset(Dataset):
 
     @staticmethod
     def class_names() -> list[str]:
+        """Return the list of semantic parsing class names."""
         return PARSING_CLASSES.copy()
 
     def __repr__(self) -> str:

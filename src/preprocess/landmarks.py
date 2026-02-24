@@ -90,6 +90,7 @@ class LandmarkExtractor68:
 
     @property
     def available(self) -> bool:
+        """Whether the face_alignment backend loaded successfully."""
         return self._available
 
     def extract(self, image_rgb: np.ndarray) -> Optional[np.ndarray]:

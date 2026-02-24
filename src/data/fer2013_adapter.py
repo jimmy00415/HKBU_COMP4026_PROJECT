@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Callable, Literal, Optional
 
 import cv2
 import numpy as np
@@ -60,7 +60,7 @@ class FER2013Dataset(Dataset):
         root: str | Path,
         split: Literal["train", "val", "test"] = "train",
         resolution: int = CANONICAL_RESOLUTION,
-        transform=None,
+        transform: Optional[Callable] = None,
     ) -> None:
         super().__init__()
         self.root = Path(root)
@@ -128,10 +128,12 @@ class FER2013Dataset(Dataset):
 
     @property
     def num_classes(self) -> int:
+        """Return the number of expression classes."""
         return len(ExpressionLabel)
 
     @property
     def class_names(self) -> list[str]:
+        """Return human-readable names for each expression class."""
         return [e.name.capitalize() for e in ExpressionLabel]
 
     def label_distribution(self) -> dict[str, int]:

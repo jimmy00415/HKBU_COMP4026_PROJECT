@@ -55,6 +55,7 @@ class DeepPrivacy2Anonymizer(AnonymizerBase):
         self._model_name = model
         self._device = device
         self._anonymizer = None  # lazy
+        self._mode = "not_loaded"
         self._available = self._repo_dir.exists()
 
         if not self._available:
@@ -137,6 +138,20 @@ class DeepPrivacy2Anonymizer(AnonymizerBase):
         face: FaceCrop,
         **kwargs: Any,
     ) -> AnonymizedFace:
+        """Anonymize a single face crop using the DeepPrivacy2 framework.
+
+        Parameters
+        ----------
+        face : FaceCrop
+            Canonical 256×256 RGB face crop.
+        **kwargs : Any
+            Additional keyword arguments (unused).
+
+        Returns
+        -------
+        AnonymizedFace
+            The anonymized face with metadata.
+        """
         self._ensure_model()
 
         if self._mode == "dp2_api":

@@ -59,6 +59,7 @@ class ExpressionReport:
     num_samples: int = 0
 
     def to_dict(self) -> dict[str, Any]:
+        """Serialize expression metrics to a flat dictionary."""
         return {
             "accuracy_original": self.accuracy_original,
             "accuracy_anonymized": self.accuracy_anonymized,

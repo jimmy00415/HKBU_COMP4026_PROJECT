@@ -71,6 +71,16 @@ class GaussianBlurAnonymizer(AnonymizerBase):
         kernel_size: Optional[int] = None,
         **kwargs: Any,
     ) -> AnonymizedFace:
+        """Apply Gaussian blur to a single face crop.
+
+        Args:
+            face: Input face crop.
+            kernel_size: Override kernel size for this call.
+            **kwargs: Ignored.
+
+        Returns:
+            Anonymized face with blurred image.
+        """
         import cv2
 
         ks = kernel_size if kernel_size is not None else self._kernel_size
@@ -139,6 +149,16 @@ class PixelateAnonymizer(AnonymizerBase):
         block_size: Optional[int] = None,
         **kwargs: Any,
     ) -> AnonymizedFace:
+        """Apply pixelation to a single face crop.
+
+        Args:
+            face: Input face crop.
+            block_size: Override block size for this call.
+            **kwargs: Ignored.
+
+        Returns:
+            Anonymized face with pixelated image.
+        """
         import cv2
 
         bs = block_size if block_size is not None else self._block_size
@@ -200,6 +220,15 @@ class BlackoutAnonymizer(AnonymizerBase):
         face: FaceCrop,
         **kwargs: Any,
     ) -> AnonymizedFace:
+        """Replace a face crop with a solid colour.
+
+        Args:
+            face: Input face crop.
+            **kwargs: Ignored.
+
+        Returns:
+            Anonymized face with solid-fill image.
+        """
         img = face.image.copy()
         h, w = img.shape[:2]
 

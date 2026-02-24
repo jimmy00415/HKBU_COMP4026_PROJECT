@@ -157,6 +157,7 @@ class FaceParser:
 
     @property
     def available(self) -> bool:
+        """Whether the BiSeNet face parser loaded successfully."""
         return self._available
 
     def parse(

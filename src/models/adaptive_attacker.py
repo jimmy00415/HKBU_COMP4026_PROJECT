@@ -225,22 +225,50 @@ class AdaptiveAttackerHead:
         return torch.softmax(logits, dim=1).cpu().numpy()
 
     def evaluate(self, embeddings: np.ndarray, labels: np.ndarray) -> float:
-        """Return top-1 accuracy."""
+        """Return top-1 accuracy.
+
+        Parameters
+        ----------
+        embeddings : np.ndarray
+            (N, D) float32 ArcFace embeddings.
+        labels : np.ndarray
+            (N,) int ground-truth identity labels.
+
+        Returns
+        -------
+        float
+            Top-1 accuracy in [0, 1].
+        """
         preds = self.predict(embeddings)
         return float((preds == labels).mean())
 
     @property
     def fitted(self) -> bool:
+        """Whether the attacker head has been trained or loaded."""
         return self._fitted
 
     # ── Persistence ────────────────────────────────────────────────────
 
     def save(self, path: str) -> None:
+        """Save attacker head weights.
+
+        Parameters
+        ----------
+        path : str
+            Destination file path for the state dict.
+        """
         import torch
         torch.save(self._model.state_dict(), path)
         logger.info("Adaptive attacker saved to %s", path)
 
     def load(self, path: str) -> None:
+        """Load attacker head weights and mark as fitted.
+
+        Parameters
+        ----------
+        path : str
+            Path to a previously saved state dict.
+        """
         import torch
         state_dict = torch.load(path, map_location=self.device, weights_only=True)
         self._model.load_state_dict(state_dict)

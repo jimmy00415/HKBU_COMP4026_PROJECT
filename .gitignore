@@ -34,6 +34,11 @@ pretrained/*.pth
 pretrained/*.onnx
 pretrained/*.pt
 pretrained/*.pkl
+pretrained/**/*.pth
+pretrained/**/*.onnx
+pretrained/**/*.ckpt
+pretrained/**/*.bin
+!pretrained/.gitkeep
 
 # ── Third-party repos (cloned at runtime) ──────────────
 third_party/
@@ -42,15 +47,20 @@ third_party/
 cache/
 *.npy
 *.npz
+data/synthetic/
 
-# ── Results (keep structure, ignore large outputs) ─────
+# ── Results (keep CSVs, plots, tables; ignore run dirs) ─
 results/run_*/
+results/**/tb_logs/
 !results/.gitkeep
 
 # ── Reports (generated) ───────────────────────────────
 reports/*.png
 reports/*.pdf
-reports/*.json
+
+# ── Coverage ───────────────────────────────────────────
+.coverage
+htmlcov/
 
 # ── Jupyter ────────────────────────────────────────────
 .ipynb_checkpoints/

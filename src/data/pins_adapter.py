@@ -19,7 +19,7 @@ from __future__ import annotations
 import hashlib
 import os
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Callable, Literal, Optional
 
 import cv2
 import numpy as np
@@ -60,7 +60,7 @@ class PinsFaceDataset(Dataset):
         root: str | Path,
         split: Literal["train", "val", "test", "all"] = "all",
         resolution: int = CANONICAL_RESOLUTION,
-        transform=None,
+        transform: Optional[Callable] = None,
     ) -> None:
         super().__init__()
         self.root = Path(root)
@@ -159,10 +159,12 @@ class PinsFaceDataset(Dataset):
 
     @property
     def num_identities(self) -> int:
+        """Return the total number of unique identities in the dataset."""
         return len(self._identity_dirs)
 
     @property
     def identity_names(self) -> list[str]:
+        """Return human-readable names for each identity."""
         return [d.name.replace("pins_", "") for d in self._identity_dirs]
 
     def identity_distribution(self) -> dict[str, int]:

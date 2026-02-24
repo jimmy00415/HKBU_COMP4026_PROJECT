@@ -37,6 +37,7 @@ class EvaluationResult:
     meta: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        """Serialize all evaluation results to a flat dictionary."""
         return {
             "privacy": self.privacy,
             "expression": self.expression,
