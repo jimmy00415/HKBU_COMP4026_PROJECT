@@ -92,7 +92,14 @@ class TestAdaptiveAttacker:
         lab = rng.randint(0, 5, 20).astype(np.int64)
         attacker.fit(emb, lab, epochs=3, verbose=False)
 
-        path = str(tmp_path / "attacker.pt")
+        import tempfile, os
+        # Use a safe temp dir to avoid Unicode path issues with PyTorch
+        safe_tmp = os.path.join(
+            os.environ.get("RUNNER_TEMP", tempfile.gettempdir()),
+            "pytest_attacker",
+        )
+        os.makedirs(safe_tmp, exist_ok=True)
+        path = os.path.join(safe_tmp, "attacker.pt")
         attacker.save(path)
 
         from src.models.adaptive_attacker import AdaptiveAttackerHead
