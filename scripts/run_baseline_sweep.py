@@ -149,35 +149,39 @@ def _load_data(
     dataset: str, data_root: str, csv_file: str,
     max_samples: Optional[int], seed: int,
 ) -> tuple[np.ndarray, Optional[np.ndarray], Optional[np.ndarray]]:
-    """Load images + labels, optionally subsampled."""
+    """Load images + labels, optionally subsampled (lazy, memory-safe)."""
     if dataset == "fer2013":
         from src.data.fer2013_adapter import FER2013Dataset
 
-        ds = FER2013Dataset(root=data_root, csv_file=csv_file, split="test")
-        images = np.stack([ds[i][0] for i in range(len(ds))])
-        expr_labels = np.array([ds[i][1] for i in range(len(ds))])
+        ds = FER2013Dataset(root=data_root, split="test")
+        n = min(len(ds), max_samples) if max_samples else len(ds)
+        rng = np.random.RandomState(seed)
+        indices = rng.choice(len(ds), n, replace=False) if n < len(ds) else list(range(n))
+        crops = [ds[i] for i in indices]
+        images = np.stack([c.image for c in crops])
+        expr_labels = np.array([c.meta.expression_label for c in crops])
         # FER-2013 has no identity labels — create pseudo-IDs per sample
         id_labels = np.arange(len(images))
+        return images, expr_labels, id_labels
+
     elif dataset == "pins":
         from src.data.pins_adapter import PinsFaceDataset
 
         ds = PinsFaceDataset(root=data_root, split="test")
-        images = np.stack([ds[i][0] for i in range(len(ds))])
-        id_labels = np.array([ds[i][1] for i in range(len(ds))])
+        n = min(len(ds), max_samples) if max_samples else len(ds)
+        rng = np.random.RandomState(seed)
+        indices = rng.choice(len(ds), n, replace=False) if n < len(ds) else list(range(n))
+        crops = [ds[i] for i in indices]
+        images = np.stack([c.image for c in crops])
+        id_labels = np.array([
+            c.meta.identity_label if c.meta.identity_label is not None else -1
+            for c in crops
+        ])
         expr_labels = None
+        return images, expr_labels, id_labels
+
     else:
         raise ValueError(f"Unsupported dataset: {dataset}")
-
-    if max_samples and len(images) > max_samples:
-        rng = np.random.RandomState(seed)
-        idx = rng.choice(len(images), max_samples, replace=False)
-        images = images[idx]
-        if expr_labels is not None:
-            expr_labels = expr_labels[idx]
-        if id_labels is not None:
-            id_labels = id_labels[idx]
-
-    return images, expr_labels, id_labels
 
 
 def _anonymize_dataset(
@@ -187,12 +191,13 @@ def _anonymize_dataset(
 ) -> np.ndarray:
     """Anonymize all images and return as array."""
     from src.anonymizers import get_anonymizer
-    from src.data.contracts import FaceCrop
+    from src.data.contracts import FaceCrop, FaceCropMeta
 
     anon = get_anonymizer(anon_name, **params)
     results = []
     for i in range(len(images)):
-        crop = FaceCrop(image=images[i])
+        meta = FaceCropMeta(dataset="eval", split="test", image_id=str(i))
+        crop = FaceCrop(image=images[i], meta=meta)
         try:
             res = anon.anonymize_single(crop)
             results.append(res.image)
@@ -207,9 +212,15 @@ def _get_expression_probs(
 ) -> Optional[np.ndarray]:
     """Get teacher expression probabilities. Returns None on failure."""
     try:
+        from pathlib import Path as _P
         from src.models.expression_teacher import ExpressionTeacher
 
-        teacher = ExpressionTeacher(backbone="resnet18", device=device)
+        # Prefer ONNX model if available
+        onnx_path = _P("pretrained/expression_teacher/onnx/model.onnx")
+        if onnx_path.exists():
+            teacher = ExpressionTeacher(onnx_path=str(onnx_path), device=device)
+        else:
+            teacher = ExpressionTeacher(backbone="resnet18", device=device)
         # Batch to avoid OOM
         probs = []
         bs = 64
@@ -265,10 +276,19 @@ def _write_frontier_csv(results: list[dict], csv_path: Path) -> None:
             pass
 
     if rows:
+        # Collect all keys (some rows may have extra fields); skip None keys
+        all_keys = dict.fromkeys(
+            k for r in rows for k in r.keys() if k is not None
+        )
         with open(csv_path, "w", newline="") as f:
-            writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+            writer = csv.DictWriter(
+                f, fieldnames=list(all_keys), extrasaction="ignore",
+            )
             writer.writeheader()
-            writer.writerows(rows)
+            # Strip None keys before writing
+            writer.writerows(
+                {k: v for k, v in r.items() if k is not None} for r in rows
+            )
         logger.info("Frontier CSV: %s (%d rows)", csv_path, len(rows))
 
 

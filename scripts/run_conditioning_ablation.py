@@ -176,7 +176,7 @@ def run_conditioning_ablation(
     original_embeddings = _get_identity_embeddings(images, device)
 
     from src.anonymizers import get_anonymizer
-    from src.data.contracts import FaceCrop
+    from src.data.contracts import FaceCrop, FaceCropMeta
 
     all_results: list[dict] = []
 
@@ -198,7 +198,8 @@ def run_conditioning_ablation(
         anon_images = []
         for i in range(N):
             conditioned = _prepare_conditioned_input(images[i], variant, device=device)
-            crop = FaceCrop(image=conditioned)
+            meta = FaceCropMeta(dataset="eval", split="test", image_id=str(i))
+            crop = FaceCrop(image=conditioned, meta=meta)
             try:
                 res = anon.anonymize_single(crop)
                 anon_images.append(res.image)

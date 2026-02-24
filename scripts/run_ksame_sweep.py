@@ -83,11 +83,12 @@ def run_ksame_sweep(
         anon.set_gallery(original_embeddings, images)
 
         # Anonymize
-        from src.data.contracts import FaceCrop
+        from src.data.contracts import FaceCrop, FaceCropMeta
 
         anon_images = []
         for i in range(N):
-            crop = FaceCrop(image=images[i])
+            meta = FaceCropMeta(dataset="eval", split="test", image_id=str(i))
+            crop = FaceCrop(image=images[i], meta=meta)
             try:
                 res = anon.anonymize_single(
                     crop, query_embedding=original_embeddings[i],

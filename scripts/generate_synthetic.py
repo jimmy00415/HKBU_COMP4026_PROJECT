@@ -105,15 +105,9 @@ def generate_synthetic_dataset(
     for split in splits:
         logger.info("Processing split: %s", split)
 
-        images, labels_expr, labels_id = _load_split(
-            dataset, data_root, csv_file, split,
-        )
-
-        if max_samples_per_split is not None and len(images) > max_samples_per_split:
-            images = images[:max_samples_per_split]
-            labels_expr = labels_expr[:max_samples_per_split]
-            if labels_id is not None:
-                labels_id = labels_id[:max_samples_per_split]
+        ds = _get_dataset(dataset, data_root, csv_file, split)
+        n_total = len(ds)
+        n_process = min(n_total, max_samples_per_split) if max_samples_per_split else n_total
 
         split_dir = out_dir / split
         split_dir.mkdir(parents=True, exist_ok=True)
@@ -121,22 +115,18 @@ def generate_synthetic_dataset(
         split_labels: dict[str, dict[str, Any]] = {}
         t0 = time.time()
 
-        for i in range(len(images)):
-            img = images[i]
-            crop = FaceCrop(
-                image=img,
-                source_dataset=dataset,
-                split=split,
-                expression_label=int(labels_expr[i]) if labels_expr is not None else -1,
-                identity_label=int(labels_id[i]) if labels_id is not None else -1,
-            )
+        for i in range(n_process):
+            # Load one sample at a time (lazy — avoids OOM)
+            crop = ds[i]
+            expr_label = _get_expression_label(crop, dataset)
+            id_label = _get_identity_label(crop, dataset)
 
             try:
                 result = anon.anonymize_single(crop)
                 anon_img = result.image
             except Exception as exc:
                 logger.warning("  Failed sample %d: %s", i, exc)
-                anon_img = img  # fallback: keep original
+                anon_img = crop.image  # fallback: keep original
 
             # Save
             fname = f"image_{i:06d}"
@@ -146,15 +136,18 @@ def generate_synthetic_dataset(
                 _save_png(anon_img, split_dir / f"{fname}.png")
 
             split_labels[str(i)] = {
-                "expression": int(labels_expr[i]) if labels_expr is not None else -1,
-                "identity": int(labels_id[i]) if labels_id is not None else -1,
+                "expression": int(expr_label),
+                "identity": int(id_label),
             }
 
             if (i + 1) % 500 == 0:
-                logger.info("  %d / %d  (%.1fs)", i + 1, len(images), time.time() - t0)
+                logger.info("  %d / %d  (%.1fs)", i + 1, n_process, time.time() - t0)
+
+            # Explicitly free memory
+            del crop, anon_img
 
         all_labels[split] = split_labels
-        logger.info("  Done split %s: %d images in %.1fs", split, len(images), time.time() - t0)
+        logger.info("  Done split %s: %d images in %.1fs", split, n_process, time.time() - t0)
 
     # ── Save labels ────────────────────────────────────────────────────
     labels_path = out_dir / "labels.json"
@@ -177,37 +170,30 @@ def generate_synthetic_dataset(
     return out_dir
 
 
-def _load_split(
-    dataset: str,
-    data_root: str,
-    csv_file: str,
-    split: str,
-) -> tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
-    """
-    Load images and labels for a given split.
-
-    Returns (images, expression_labels, identity_labels_or_None).
-    """
+def _get_dataset(dataset: str, data_root: str, csv_file: str, split: str):
+    """Return a dataset object that supports __len__ and __getitem__ (lazy)."""
     if dataset == "fer2013":
         from src.data.fer2013_adapter import FER2013Dataset
-
-        ds = FER2013Dataset(root=data_root, csv_file=csv_file, split=split)
-        images = np.stack([ds[i][0] for i in range(len(ds))])
-        labels = np.array([ds[i][1] for i in range(len(ds))])
-        return images, labels, None
-
+        return FER2013Dataset(root=data_root, split=split)
     elif dataset == "pins":
         from src.data.pins_adapter import PinsFaceDataset
-
-        ds = PinsFaceDataset(root=data_root, split=split)
-        images = np.stack([ds[i][0] for i in range(len(ds))])
-        id_labels = np.array([ds[i][1] for i in range(len(ds))])
-        # Pins doesn't have expression labels
-        expr_labels = np.full(len(ds), -1, dtype=np.int64)
-        return images, expr_labels, id_labels
-
+        return PinsFaceDataset(root=data_root, split=split)
     else:
         raise ValueError(f"Unsupported dataset: {dataset}")
+
+
+def _get_expression_label(crop, dataset: str) -> int:
+    """Extract expression label from a FaceCrop."""
+    if dataset == "fer2013":
+        return crop.meta.expression_label if crop.meta.expression_label is not None else -1
+    return -1
+
+
+def _get_identity_label(crop, dataset: str) -> int:
+    """Extract identity label from a FaceCrop."""
+    if dataset == "pins":
+        return crop.meta.identity_label if crop.meta.identity_label is not None else -1
+    return -1
 
 
 def _save_png(image: np.ndarray, path: Path) -> None:

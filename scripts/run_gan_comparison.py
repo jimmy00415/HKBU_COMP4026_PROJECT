@@ -83,12 +83,13 @@ def run_gan_comparison(
 
         t0 = time.time()
 
-        from src.data.contracts import FaceCrop
+        from src.data.contracts import FaceCrop, FaceCropMeta
 
         anon_images = []
         failed = 0
         for i in range(N):
-            crop = FaceCrop(image=images[i])
+            meta = FaceCropMeta(dataset="eval", split="test", image_id=str(i))
+            crop = FaceCrop(image=images[i], meta=meta)
             try:
                 res = anon.anonymize_single(crop)
                 anon_images.append(res.image)

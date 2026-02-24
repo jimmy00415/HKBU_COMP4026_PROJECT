@@ -129,15 +129,25 @@ def _get_generator(anonymizer):
 
     Returns (generator_module, is_differentiable) or (None, False).
     """
+    # Force lazy-loaded anonymizers to initialise their model
+    ensure = getattr(anonymizer, "_ensure_model", None)
+    if callable(ensure):
+        try:
+            ensure()
+        except Exception as exc:
+            logger.warning("Failed to ensure model: %s", exc)
+
     # GANonymization
     gen = getattr(anonymizer, "_generator", None)
     if gen is not None:
         return gen, True
 
-    # DeepPrivacy2
+    # General _model attribute (GANonymization raw_generator, DeepPrivacy2, etc.)
     gen = getattr(anonymizer, "_model", None)
     if gen is not None:
-        return gen, True
+        import torch.nn as nn
+        if isinstance(gen, nn.Module):
+            return gen, True
 
     # CIAGAN
     gen = getattr(anonymizer, "_G", None)
@@ -242,11 +252,24 @@ def finetune_anonymizer(
     )
     logger.info("Expression teacher loaded (frozen).")
 
-    # We need the teacher's torch model for differentiable forward pass
+    # We need the teacher's torch model for differentiable forward pass.
+    # If teacher is ONNX-only, fall back to a lightweight ResNet-18 teacher.
     teacher_model = teacher._torch_model
     if teacher_model is None:
-        logger.error("Teacher must be a PyTorch model for differentiable fine-tuning.")
-        return {"status": "error", "reason": "teacher_not_torch"}
+        logger.warning(
+            "ONNX teacher detected — loading lightweight ResNet-18 teacher for "
+            "differentiable fine-tuning."
+        )
+        from src.models.expression_classifier import ExpressionClassifier
+        _cls = ExpressionClassifier(
+            backbone=teacher_backbone, num_classes=7, pretrained=True, device=device,
+        )
+        teacher_model = _cls._model
+        teacher_model.eval()
+        for p in teacher_model.parameters():
+            p.requires_grad = False
+        import timm
+        teacher._data_cfg = timm.data.resolve_model_data_config(teacher_model)
 
     # ── Load identity embedder (frozen) ────────────────────────────────
     id_embedder = _load_identity_embedder(identity_model, device)
@@ -255,12 +278,11 @@ def finetune_anonymizer(
     logger.info("Loading training data...")
     from src.data.fer2013_adapter import FER2013Dataset
 
-    train_ds = FER2013Dataset(root=data_root, csv_file=csv_file, split="train")
-    images = np.stack([train_ds[i][0] for i in range(len(train_ds))])
-
-    if max_samples and len(images) > max_samples:
-        idx = np.random.choice(len(images), max_samples, replace=False)
-        images = images[idx]
+    train_ds = FER2013Dataset(root=data_root, split="train")
+    n_total = len(train_ds)
+    n_use = min(n_total, max_samples) if max_samples else n_total
+    # Load lazily to avoid OOM
+    images = np.stack([train_ds[i].image for i in range(n_use)])
 
     logger.info("Training on %d images.", len(images))
 

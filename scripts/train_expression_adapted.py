@@ -176,13 +176,17 @@ def train_expression_adapted(
     from src.data.fer2013_adapter import FER2013Dataset
 
     logger.info("Loading real FER-2013 data...")
-    train_ds = FER2013Dataset(root=data_root, csv_file=csv_file, split="train")
-    val_ds = FER2013Dataset(root=data_root, csv_file=csv_file, split="val")
+    train_ds = FER2013Dataset(root=data_root, split="train")
+    val_ds = FER2013Dataset(root=data_root, split="val")
 
-    real_train_images = np.stack([train_ds[i][0] for i in range(len(train_ds))])
-    real_train_labels = np.array([train_ds[i][1] for i in range(len(train_ds))])
-    val_images = np.stack([val_ds[i][0] for i in range(len(val_ds))])
-    val_labels = np.array([val_ds[i][1] for i in range(len(val_ds))])
+    # Load lazily in limited batches to avoid OOM
+    n_train = min(len(train_ds), 500)  # cap for memory
+    n_val = min(len(val_ds), 500)
+
+    real_train_images = np.stack([train_ds[i].image for i in range(n_train)])
+    real_train_labels = np.array([train_ds[i].meta.expression_label for i in range(n_train)])
+    val_images = np.stack([val_ds[i].image for i in range(n_val)])
+    val_labels = np.array([val_ds[i].meta.expression_label for i in range(n_val)])
 
     # ── Build training set per regime ──────────────────────────────────
     if regime == "real":

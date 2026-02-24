@@ -149,11 +149,18 @@ def train_expression(
     """
     Full training loop for the expression classifier.
 
+    Uses :class:`torch.utils.data.DataLoader` for memory-efficient batching
+    (FER-2013 has ~28 k images; loading all as 256×256×3 would need ~21 GB).
+
     Returns
     -------
     dict with ``history``, ``best_val_acc``, ``checkpoint_path``.
     """
+    import torch
+    from torch.utils.data import DataLoader
+
     np.random.seed(seed)
+    torch.manual_seed(seed)
 
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
@@ -166,19 +173,27 @@ def train_expression(
     if dataset == "fer2013":
         from src.data.fer2013_adapter import FER2013Dataset
 
-        train_ds = FER2013Dataset(root=data_root, csv_file=csv_file, split="train")
-        val_ds = FER2013Dataset(root=data_root, csv_file=csv_file, split="val")
-
-        train_images = np.stack([train_ds[i][0] for i in range(len(train_ds))])
-        train_labels = np.array([train_ds[i][1] for i in range(len(train_ds))])
-        val_images = np.stack([val_ds[i][0] for i in range(len(val_ds))])
-        val_labels = np.array([val_ds[i][1] for i in range(len(val_ds))])
+        train_ds = FER2013Dataset(root=data_root, split="train")
+        val_ds = FER2013Dataset(root=data_root, split="val")
     else:
         raise ValueError(f"Unsupported dataset: {dataset}")
 
-    logger.info(
-        "Train: %d samples, Val: %d samples", len(train_labels), len(val_labels)
+    # Custom collate: FaceCrop → (images_np, labels_np) batch
+    def _collate_face_crops(batch):
+        images = np.stack([fc.image for fc in batch])         # (B, 256, 256, 3)
+        labels = np.array([fc.meta.expression_label for fc in batch])
+        return images, labels
+
+    train_loader = DataLoader(
+        train_ds, batch_size=batch_size, shuffle=True,
+        num_workers=0, collate_fn=_collate_face_crops,
     )
+    val_loader = DataLoader(
+        val_ds, batch_size=batch_size * 2, shuffle=False,
+        num_workers=0, collate_fn=_collate_face_crops,
+    )
+
+    logger.info("Train: %d samples, Val: %d samples", len(train_ds), len(val_ds))
 
     # ── Build model ────────────────────────────────────────────────────
     from src.models.expression_classifier import ExpressionClassifier
@@ -198,9 +213,6 @@ def train_expression(
     best_val_acc = 0.0
     best_ckpt_path = str(ckpt_dir / f"expression_{backbone}_best.pth")
 
-    import torch
-
-    y_train = torch.from_numpy(train_labels.astype(np.int64)).to(device)
     optimizer = torch.optim.AdamW(
         model._model.parameters(), lr=lr, weight_decay=weight_decay,
     )
@@ -213,19 +225,17 @@ def train_expression(
     t0 = time.time()
 
     for epoch in range(1, epochs + 1):
-        # ── Augmentation ───────────────────────────────────────────
-        epoch_images = _augment_batch(train_images, seed=seed + epoch) if augmentation else train_images
-
-        # ── Shuffle ────────────────────────────────────────────────
-        perm = np.random.permutation(len(train_labels))
         total_loss = 0.0
         correct = 0
         total = 0
 
-        for start in range(0, len(train_labels), batch_size):
-            idx = perm[start : start + batch_size]
-            xb = model._prepare_batch(epoch_images[idx])
-            yb = y_train[idx]
+        for batch_images, batch_labels in train_loader:
+            # Apply augmentation
+            if augmentation:
+                batch_images = _augment_batch(batch_images, seed=seed + epoch + total)
+
+            xb = model._prepare_batch(batch_images)
+            yb = torch.from_numpy(batch_labels.astype(np.int64)).to(device)
 
             optimizer.zero_grad()
             logits = model._model(xb)
@@ -244,8 +254,17 @@ def train_expression(
         epoch_acc = correct / max(total, 1)
 
         # ── Validation ─────────────────────────────────────────────
-        val_acc = model.evaluate(val_images, val_labels)
-        model._model.train()  # restore train mode after eval
+        model._model.eval()
+        val_correct = 0
+        val_total = 0
+        with torch.no_grad():
+            for val_imgs, val_lbls in val_loader:
+                xv = model._prepare_batch(val_imgs)
+                preds = model._model(xv).argmax(dim=1).cpu().numpy()
+                val_correct += (preds == val_lbls).sum()
+                val_total += len(val_lbls)
+        val_acc = float(val_correct / max(val_total, 1))
+        model._model.train()
 
         history["train_loss"].append(epoch_loss)
         history["train_acc"].append(epoch_acc)
@@ -268,7 +287,7 @@ def train_expression(
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             model.save(best_ckpt_path)
-            logger.info("  ↑ New best val_acc=%.4f → saved %s", val_acc, best_ckpt_path)
+            logger.info("  -> New best val_acc=%.4f  saved %s", val_acc, best_ckpt_path)
 
         # Early stopping
         if stopper.step(val_acc):

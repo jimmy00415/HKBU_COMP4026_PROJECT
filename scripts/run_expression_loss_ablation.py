@@ -230,11 +230,12 @@ def _anonymize_with_variant(
 
 def _anonymize_all(anon, images: np.ndarray) -> np.ndarray:
     """Run anonymizer on all images."""
-    from src.data.contracts import FaceCrop
+    from src.data.contracts import FaceCrop, FaceCropMeta
 
     results = []
     for i in range(len(images)):
-        crop = FaceCrop(image=images[i])
+        meta = FaceCropMeta(dataset="eval", split="test", image_id=str(i))
+        crop = FaceCrop(image=images[i], meta=meta)
         try:
             res = anon.anonymize_single(crop)
             results.append(res.image)
