@@ -1,0 +1,206 @@
+{
+  "privacy": {
+    "closed_set_top1": 0.88,
+    "closed_set_top5": 0.98,
+    "tar_at_far": {},
+    "verification_auc": 0.0,
+    "verification_eer": 0.0,
+    "adaptive_attacker_accuracy": 0.0,
+    "adaptive_attacker_trained": true,
+    "privacy_score": 0.12,
+    "anonymizer_name": "pixelate",
+    "anonymizer_params": {
+      "block_size": 12
+    },
+    "num_samples": 50
+  },
+  "expression": {
+    "accuracy_original": 0.26,
+    "accuracy_anonymized": 0.14,
+    "accuracy_delta": -0.12,
+    "expression_consistency": 0.0,
+    "expression_match_rate": 0.28,
+    "per_class_recall_original": {
+      "Angry": 0.4,
+      "Disgust": 0.0,
+      "Fear": 0.5,
+      "Happy": 0.75,
+      "Sad": 0.07142857142857142,
+      "Surprise": 0.0,
+      "Neutral": 0.0
+    },
+    "per_class_recall_anonymized": {
+      "Angry": 0.0,
+      "Disgust": 0.0,
+      "Fear": 0.0,
+      "Happy": 0.25,
+      "Sad": 0.07142857142857142,
+      "Surprise": 0.8333333333333334,
+      "Neutral": 0.0
+    },
+    "per_class_recall_delta": {
+      "Angry": -0.4,
+      "Disgust": 0.0,
+      "Fear": -0.5,
+      "Happy": -0.5,
+      "Sad": 0.0,
+      "Surprise": 0.8333333333333334,
+      "Neutral": 0.0
+    },
+    "ece_original": 0.5513030129671097,
+    "ece_anonymized": 0.38142432779073715,
+    "cm_original": [
+      [
+        4,
+        0,
+        1,
+        1,
+        2,
+        2,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        5,
+        0,
+        2,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        3,
+        0,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        1,
+        1,
+        1,
+        9,
+        0
+      ],
+      [
+        2,
+        0,
+        1,
+        0,
+        0,
+        0,
+        3
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        2,
+        4,
+        0
+      ]
+    ],
+    "cm_anonymized": [
+      [
+        0,
+        0,
+        0,
+        1,
+        0,
+        9,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        4,
+        1,
+        5,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        0,
+        3,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        1,
+        1,
+        11,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        1,
+        5,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        0,
+        5,
+        0
+      ]
+    ],
+    "utility_score": 0.05600000000000001,
+    "anonymizer_name": "pixelate",
+    "num_samples": 50
+  },
+  "realism": {
+    "fid": -1.0,
+    "lpips_mean": 0.7727287411689758,
+    "lpips_std": 0.07671929150819778,
+    "psnr_mean": 23.445569475875416,
+    "psnr_std": 2.417400683251701,
+    "ssim_mean": 0.6417916576170282,
+    "ssim_std": 0.07491469740355602,
+    "anonymizer_name": "pixelate",
+    "num_samples": 50
+  },
+  "meta": {
+    "anonymizer_name": "pixelate",
+    "anonymizer_params": {
+      "block_size": 12
+    },
+    "num_samples": 50,
+    "run_id": "pixelate_block_size12",
+    "timestamp": "2026-02-23 21:12:03"
+  }
+}

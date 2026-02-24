@@ -1,0 +1,6 @@
+_run_id,_anonymizer,_params,fixed_top1,fixed_top5,fixed_auc,fixed_eer,adaptive_accuracy,adaptive_trained,privacy_gap,_elapsed
+blur_kernel_size31,blur,"{""kernel_size"": 31}",1.0,1.0,0.5,0.5,0.0,True,-1.0,9.818798780441284
+blur_kernel_size71,blur,"{""kernel_size"": 71}",0.88,1.0,0.5,0.5,0.0,True,-0.88,9.820769786834717
+pixelate_block_size8,pixelate,"{""block_size"": 8}",1.0,1.0,0.5,0.5,0.0,True,-1.0,9.607068061828613
+pixelate_block_size24,pixelate,"{""block_size"": 24}",0.04,0.24,0.5,0.5,0.0,True,-0.04,9.781009674072266
+blackout,blackout,{},0.02,0.1,0.5,0.5,0.0,True,-0.02,11.559165716171265

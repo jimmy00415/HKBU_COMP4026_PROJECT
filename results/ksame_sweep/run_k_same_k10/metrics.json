@@ -1,0 +1,206 @@
+{
+  "privacy": {
+    "closed_set_top1": 0.04,
+    "closed_set_top5": 0.14,
+    "tar_at_far": {},
+    "verification_auc": 0.0,
+    "verification_eer": 0.0,
+    "adaptive_attacker_accuracy": 0.0,
+    "adaptive_attacker_trained": true,
+    "privacy_score": 0.96,
+    "anonymizer_name": "k_same",
+    "anonymizer_params": {
+      "k": 10
+    },
+    "num_samples": 50
+  },
+  "expression": {
+    "accuracy_original": 0.26,
+    "accuracy_anonymized": 0.14,
+    "accuracy_delta": -0.12,
+    "expression_consistency": 0.0,
+    "expression_match_rate": 0.3,
+    "per_class_recall_original": {
+      "Angry": 0.4,
+      "Disgust": 0.0,
+      "Fear": 0.5,
+      "Happy": 0.75,
+      "Sad": 0.07142857142857142,
+      "Surprise": 0.0,
+      "Neutral": 0.0
+    },
+    "per_class_recall_anonymized": {
+      "Angry": 0.0,
+      "Disgust": 0.0,
+      "Fear": 0.1,
+      "Happy": 0.0,
+      "Sad": 0.2857142857142857,
+      "Surprise": 0.3333333333333333,
+      "Neutral": 0.0
+    },
+    "per_class_recall_delta": {
+      "Angry": -0.4,
+      "Disgust": 0.0,
+      "Fear": -0.4,
+      "Happy": -0.75,
+      "Sad": 0.21428571428571427,
+      "Surprise": 0.3333333333333333,
+      "Neutral": 0.0
+    },
+    "ece_original": 0.5513030129671097,
+    "ece_anonymized": 0.5166337436437607,
+    "cm_original": [
+      [
+        4,
+        0,
+        1,
+        1,
+        2,
+        2,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        5,
+        0,
+        2,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        3,
+        0,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        1,
+        1,
+        1,
+        9,
+        0
+      ],
+      [
+        2,
+        0,
+        1,
+        0,
+        0,
+        0,
+        3
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        2,
+        4,
+        0
+      ]
+    ],
+    "cm_anonymized": [
+      [
+        0,
+        0,
+        1,
+        0,
+        3,
+        3,
+        3
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        0,
+        1,
+        4,
+        4
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        3,
+        1,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        0,
+        4,
+        7,
+        2
+      ],
+      [
+        0,
+        0,
+        1,
+        0,
+        1,
+        2,
+        2
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        1,
+        5,
+        0
+      ]
+    ],
+    "utility_score": 0.05600000000000001,
+    "anonymizer_name": "k_same",
+    "num_samples": 50
+  },
+  "realism": {
+    "fid": -1.0,
+    "lpips_mean": 0.4950578212738037,
+    "lpips_std": 0.05478423088788986,
+    "psnr_mean": 12.743320275244049,
+    "psnr_std": 1.7213370710746532,
+    "ssim_mean": 0.5308627804873133,
+    "ssim_std": 0.08226084783954424,
+    "anonymizer_name": "k_same",
+    "num_samples": 50
+  },
+  "meta": {
+    "anonymizer_name": "k_same",
+    "anonymizer_params": {
+      "k": 10
+    },
+    "num_samples": 50,
+    "run_id": "k_same_k10",
+    "timestamp": "2026-02-23 21:15:31"
+  }
+}

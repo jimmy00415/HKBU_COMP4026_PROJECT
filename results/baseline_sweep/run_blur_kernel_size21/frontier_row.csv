@@ -1,0 +1,2 @@
+anonymizer,params,n_samples,closed_set_top1,verification_auc,adaptive_acc,privacy_score,acc_original,acc_anonymized,acc_delta,expr_consistency,expr_match_rate,utility_score,fid,lpips_mean,psnr_mean,ssim_mean
+blur,{"kernel_size": 21},50,1.0,0.0,0.0,0.0,0.26,0.24,-0.020000000000000018,0.45685845613479614,0.66,0.3701150736808777,-1.0,0.13549639284610748,30.84439580104397,0.9201338798751748

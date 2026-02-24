@@ -1,0 +1,2 @@
+anonymizer,params,n_samples,closed_set_top1,verification_auc,adaptive_acc,privacy_score,acc_original,acc_anonymized,acc_delta,expr_consistency,expr_match_rate,utility_score,fid,lpips_mean,psnr_mean,ssim_mean
+ciagan,{"device": "cpu"},50,0.02,0.0,0.0,0.98,0.26,0.14,-0.12,0.0,0.3,0.05600000000000001,-1.0,0.9745796322822571,6.401990464202936,0.03451077769061108

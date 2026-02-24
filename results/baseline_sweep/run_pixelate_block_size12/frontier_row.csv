@@ -1,0 +1,2 @@
+anonymizer,params,n_samples,closed_set_top1,verification_auc,adaptive_acc,privacy_score,acc_original,acc_anonymized,acc_delta,expr_consistency,expr_match_rate,utility_score,fid,lpips_mean,psnr_mean,ssim_mean
+pixelate,{"block_size": 12},50,0.88,0.0,0.0,0.12,0.26,0.14,-0.12,0.0,0.28,0.05600000000000001,-1.0,0.7727287411689758,23.445569475875416,0.6417916576170282

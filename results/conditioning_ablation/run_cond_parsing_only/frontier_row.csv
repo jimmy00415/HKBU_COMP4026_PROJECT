@@ -1,0 +1,2 @@
+anonymizer,params,n_samples,closed_set_top1,verification_auc,adaptive_acc,privacy_score,acc_original,acc_anonymized,acc_delta,expr_consistency,expr_match_rate,utility_score,fid,lpips_mean,psnr_mean,ssim_mean
+ganonymization,{"conditioning": "parsing_only"},50,0.02,0.0,0.0,0.98,0.26,0.1,-0.16,0.0,0.26,0.04000000000000001,-1.0,0.8932358026504517,6.383337840296484,0.08679041259776454

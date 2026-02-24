@@ -1,0 +1,30 @@
+{
+  "history": {
+    "train_loss": [
+      1.8820235433578492,
+      1.761879180908203,
+      1.652475824356079,
+      1.5632922077178955,
+      1.4799303007125855
+    ],
+    "train_acc": [
+      0.204,
+      0.286,
+      0.358,
+      0.45,
+      0.48
+    ],
+    "val_acc": [
+      0.24,
+      0.228,
+      0.258,
+      0.232,
+      0.244
+    ]
+  },
+  "best_val_acc": 0.258,
+  "checkpoint_path": "pretrained\\expression_resnet18_anonymized_best.pth",
+  "elapsed_seconds": 147.49359846115112,
+  "regime": "anonymized",
+  "real_val_acc": 0.258
+}

@@ -1,0 +1,23 @@
+{
+  "anonymizer": "ganonymization",
+  "lambda_expr": 1.0,
+  "lambda_id": 0.0,
+  "epochs": 2,
+  "lr": 0.0001,
+  "elapsed_seconds": 12.89501428604126,
+  "history": {
+    "total_loss": [
+      0.01202818751335144,
+      0.01078113317489624
+    ],
+    "expr_loss": [
+      0.01202818751335144,
+      0.01078113317489624
+    ],
+    "id_loss": [
+      0.0,
+      0.0
+    ]
+  },
+  "checkpoint_path": "pretrained\\ganonymization_finetuned.pth"
+}
